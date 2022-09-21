@@ -4,6 +4,7 @@ let game_started = false
 let b_prev = 0
 let score = 0
 let ended = false
+let lives=3
 input.onButtonPressed(Button.A, function () {
 
     if (game_started) {
@@ -28,18 +29,21 @@ input.onButtonPressed(Button.B, function () {
 basic.forever(function () {
     if (game_started) {
         enemy.change(LedSpriteProperty.X, -1)
-        score += 1
         basic.pause(400)
         if (enemy.get(LedSpriteProperty.X) == 0) {
+            score += 1000
             enemy.set(LedSpriteProperty.X, 4)
         }
         if (player.isTouching(enemy)) {
-            player.delete()
+            lives--
+           if(lives==0){
+             player.delete()
             enemy.delete()
             basic.showString("You lose score:" + score)
             ended = true
             basic.pause(2000)
             control.reset()
+           }
         }
     } else {
         basic.showLeds(`
@@ -49,5 +53,14 @@ basic.forever(function () {
             . # # . .
             . # . . .
             `)
+    }
+})
+input.onGesture(Gesture.FreeFall, function() {
+    if (b_prev == 0) {
+        b_prev = 1
+        game.pause()
+    } else {
+        game.resume()
+        b_prev = 0
     }
 })
